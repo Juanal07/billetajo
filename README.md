@@ -15,8 +15,8 @@ Actívalo `source venv/bin/activate`
 Instala dependencias `pip install -r requirements.txt`
 
 Si quieres actualizar dependencias:
-Necesitas la herramienta pipreq `pip install pipreq`
-`pipreq .`
+Necesitas la herramienta pipreq `pip install pipreqs`
+`pipreqs --force .`
 
 ## Run
 
