@@ -14,7 +14,7 @@ Necesitas la herramienta virtualenv `pip install virtualenv`
 
 Crea un entorno virtual `virtualenv venv`
 
-Actívalo `source venv/bin/activate`
+Actívalo `venv/scripts/activate`
 
 ## Dependencies
 
