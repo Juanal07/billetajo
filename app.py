@@ -1,4 +1,8 @@
 from flask import Flask, jsonify, abort, request, make_response
+import pyspark
+from pyspark.conf import SparkConf
+SparkSession.builder.config(conf=SparkConf())
+# import spark
 # from flask_cors import CORS
 
 def main():
@@ -25,5 +29,10 @@ def main():
 
 if __name__ == '__main__':
 
-    print('hola')
+    # print('hola')
     # main()
+    # sc = SparkContext(master = local[*], app id = local-1636643309602)
+    # rdd = sc.textFile('README.md')
+    # rdd.count()
+
+    datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
