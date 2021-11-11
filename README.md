@@ -2,6 +2,8 @@
 
 Práctica Big Data
 
+Necesitas tener instalado python, pip y git.
+
 ## Download
 
 `git clone https://github.com/Juanal07/billetajo.git`
