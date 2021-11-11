@@ -4,7 +4,7 @@ import collections
 conf = SparkConf().setMaster("local").setAppName("ContarValoraciones")
 sc = SparkContext(conf = conf)
 
-lines = sc.textFile("ml-latest/ratings.csv")
+lines = sc.textFile("ratings.csv")
 
 ratings = lines.map(lambda x: x.split(",")[2])
 result = ratings.countByValue()
