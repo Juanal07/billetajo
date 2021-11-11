@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, abort, request, make_response
-import pyspark
-from pyspark.conf import SparkConf
-SparkSession.builder.config(conf=SparkConf())
+from pyspark import SparkConf, SparkContext
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.master("local[*]").getOrCreate()
+
 # import spark
 # from flask_cors import CORS
 
@@ -36,3 +37,5 @@ if __name__ == '__main__':
     # rdd.count()
 
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
+    datos_csv.createOrReplaceTempView('tarjetas')
+    spark.sql('''SELECT SECTOR, IMPORTE FROM tarjetas ORDER BY IMPORTE DESC''').show()
