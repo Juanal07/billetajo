@@ -2,13 +2,12 @@ from flask import Flask, jsonify, abort, request, make_response
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from google.cloud import storage
-import os
 
-os.system('set GOOGLE_APPLICATION_CREDENTIALS=big-data-328215-74151e35e325.json')
+storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
+
+
 
 spark = SparkSession.builder.master("local[*]").getOrCreate()
-storage_client = storage.Client()
-
 
 # import spark
 # from flask_cors import CORS
@@ -42,11 +41,9 @@ if __name__ == '__main__':
     # sc = SparkContext(master = local[*], app id = local-1636643309602)
     # rdd = sc.textFile('README.md')
     # rdd.count()
-
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
     datos_csv.createOrReplaceTempView('tarjetas')
     spark.sql('''SELECT SECTOR, IMPORTE FROM tarjetas ORDER BY IMPORTE DESC''').show()
-    
 
     #PARA DERCARGA DE ARCHIVOS DEL BUCKET
     # source_blob_name= 'cards.csv'
