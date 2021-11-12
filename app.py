@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, abort, request, make_response
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
+from google.cloud import storage
+
 spark = SparkSession.builder.master("local[*]").getOrCreate()
+storage_client = storage.Client()
+
 
 # import spark
 # from flask_cors import CORS
@@ -39,3 +43,18 @@ if __name__ == '__main__':
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
     datos_csv.createOrReplaceTempView('tarjetas')
     spark.sql('''SELECT SECTOR, IMPORTE FROM tarjetas ORDER BY IMPORTE DESC''').show()
+    
+
+    #PARA DERCARGA DE ARCHIVOS DEL BUCKET
+    # source_blob_name= 'cards.csv'
+    # destination_file_name = 'downloaded_cards.csv'
+    # bucket_name = 'datosbd'
+    # # get bucket object 
+
+    # try:
+    #     bucket = storage_client.bucket(bucket_name)
+    #     blob = bucket.blob(source_blob_name)
+    #     blob.download_to_filename(destination_file_name)
+    #     print('file: ',destination_file_name,' downloaded from bucket: ',bucket_name,' successfully')
+    # except Exception as e:
+    #     print(e)
