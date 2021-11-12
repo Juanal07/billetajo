@@ -2,6 +2,9 @@ from flask import Flask, jsonify, abort, request, make_response
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from google.cloud import storage
+import os
+
+os.system('set GOOGLE_APPLICATION_CREDENTIALS=big-data-328215-74151e35e325.json')
 
 spark = SparkSession.builder.master("local[*]").getOrCreate()
 storage_client = storage.Client()

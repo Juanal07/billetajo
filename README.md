@@ -18,7 +18,7 @@ Crea un entorno virtual `virtualenv venv`
 
 Actívalo en Linux/MacOS `source venv/bin/activate`
 
-Actívalo en Windows`venv/scripts/activate`
+Actívalo en Windows`venv\scripts\activate`
 
 ## Dependencies
 
