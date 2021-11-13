@@ -43,7 +43,9 @@ if __name__ == '__main__':
     # rdd.count()
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
     datos_csv.createOrReplaceTempView('tarjetas')
-    spark.sql('''SELECT SECTOR, IMPORTE FROM tarjetas ORDER BY IMPORTE DESC''').show()
+    result = spark.sql('''SELECT SECTOR, IMPORTE FROM tarjetas ORDER BY IMPORTE DESC''')
+    result.show()
+    result.toPandas().to_csv('test.csv')
 
     #PARA DERCARGA DE ARCHIVOS DEL BUCKET
     # source_blob_name= 'cards.csv'
@@ -58,3 +60,8 @@ if __name__ == '__main__':
     #     print('file: ',destination_file_name,' downloaded from bucket: ',bucket_name,' successfully')
     # except Exception as e:
     #     print(e)
+
+    #PARA SUBIR ARCHIVOS AL BUCKET
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('test.csv')
+    blob.upload_from_filename('test.csv')
