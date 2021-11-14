@@ -45,6 +45,7 @@ if __name__ == '__main__':
     datos_csv.createOrReplaceTempView('tarjetas')
     datos_csv = (spark.read.csv('datos/weather.csv',header=True, inferSchema=True, sep =";"))
     datos_csv.createOrReplaceTempView('clima')
+
     # Top Ingresos por Sector
     result = spark.sql('''SELECT SECTOR, SUM(IMPORTE) AS total FROM tarjetas GROUP BY SECTOR ORDER BY total DESC''')
     result.show()
@@ -92,6 +93,22 @@ if __name__ == '__main__':
     bucket = storage_client.get_bucket('datosbd')
     blob = bucket.blob('barriosPorImporte.csv')
     blob.upload_from_filename('barriosPorImporte.csv')
+
+    # Total Movimientos por Horas y Sector
+    result = spark.sql('''SELECT SECTOR, FRANJA_HORARIA, COUNT(IMPORTE) AS total FROM tarjetas GROUP BY SECTOR, FRANJA_HORARIA ORDER BY SECTOR, FRANJA_HORARIA ASC''')
+    result.show()
+    result.toPandas().to_csv('totalMovsPorHorasSector.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('totalMovsPorHorasSector.csv')
+    blob.upload_from_filename('totalMovsPorHorasSector.csv')
+
+    # Barrios donde se compre muchos alimentos pero no hay comercio de alimentación
+    result = spark.sql('''SELECT CP_CLIENTE, count(IMPORTE) as total FROM tarjetas WHERE CP_CLIENTE!=CP_COMERCIO AND SECTOR="ALIMENTACION" GROUP BY CP_CLIENTE ORDER BY total DESC''')
+    result.show()
+    result.toPandas().to_csv('barriosAlimentacioSinTiendas.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('barriosAlimentacioSinTiendas.csv')
+    blob.upload_from_filename('barriosAlimentacioSinTiendas.csv')
 
     #PARA DERCARGA DE ARCHIVOS DEL BUCKET
     # source_blob_name= 'cards.csv'
