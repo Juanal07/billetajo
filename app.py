@@ -2,15 +2,13 @@ from flask import Flask, jsonify, abort, request, make_response
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from google.cloud import storage
+import datetime
+# import spark
+# from flask_cors import CORS
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 
-
-
 spark = SparkSession.builder.master("local[*]").getOrCreate()
-
-# import spark
-# from flask_cors import CORS
 
 def main():
     app = Flask(__name__)
@@ -109,6 +107,72 @@ if __name__ == '__main__':
     bucket = storage_client.get_bucket('datosbd')
     blob = bucket.blob('barriosAlimentacioSinTiendas.csv')
     blob.upload_from_filename('barriosAlimentacioSinTiendas.csv')
+
+    # Barrios con mayor gasto en salud
+    result = spark.sql('''SELECT CP_CLIENTE, SUM(IMPORTE) as total FROM tarjetas WHERE SECTOR="SALUD" GROUP BY CP_CLIENTE ORDER BY total DESC''')
+    result.show()
+    result.toPandas().to_csv('barriosMayorSalud.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('barriosMayorSalud.csv')
+    blob.upload_from_filename('barriosMayorSalud.csv')
+
+    # Barrios que mas gastan en cada sector
+    result = spark.sql('''SELECT SECTOR, CP_CLIENTE, SUM(IMPORTE) as total FROM tarjetas GROUP BY CP_CLIENTE, SECTOR ORDER BY SECTOR, total DESC''')
+    result.show()
+    result.toPandas().to_csv('barriosMayorSector.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('barriosMayorSector.csv')
+    blob.upload_from_filename('barriosMayorSector.csv')
+
+    # Volumen de compras por sector y barrio
+    result = spark.sql('''SELECT SECTOR, CP_CLIENTE, COUNT(IMPORTE) as total FROM tarjetas GROUP BY CP_CLIENTE, SECTOR ORDER BY SECTOR, total DESC''')
+    result.show()
+    result.toPandas().to_csv('volumenComprasSector.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('volumenComprasSector.csv')
+    blob.upload_from_filename('volumenComprasSector.csv')
+
+    # Gasto medio compra
+    # result = spark.sql('''SELECT ''')
+    # result.show()
+    # result.toPandas().to_csv('gastoMedioCompra.csv')
+    # bucket = storage_client.get_bucket('datosbd')
+    # blob = bucket.blob('gastoMedioCompra.csv')
+    # blob.upload_from_filename('gastoMedioCompra.csv')
+
+    # Tiempo de hoy hace un año*
+    x = datetime.datetime.now()
+    fecha = x.strftime("2015-%m-%d")
+    result = spark.sql("SELECT TMax, TMin, Precip FROM clima WHERE FECHA='{}'".format(fecha))
+    result.show()
+    result.toPandas().to_csv('tiempoHoy.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('tiempoHoy.csv')
+    blob.upload_from_filename('tiempoHoy.csv')
+
+    # Dias mas calurosos
+    result = spark.sql('''SELECT FECHA, TMax FROM clima ORDER BY TMax DESC LIMIT 20''')
+    result.show()
+    result.toPandas().to_csv('diasCalor.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('diasCalor.csv')
+    blob.upload_from_filename('diasCalor.csv')
+    
+    # Dias mas frios
+    result = spark.sql('''SELECT FECHA, TMin FROM clima ORDER BY TMin ASC LIMIT 20''')
+    result.show()
+    result.toPandas().to_csv('diasFrio.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('diasFrio.csv')
+    blob.upload_from_filename('diasFrio.csv')
+
+    # Dias mas lluviosos
+    result = spark.sql('''SELECT FECHA, Precip FROM clima ORDER BY Precip DESC LIMIT 20''')
+    result.show()
+    result.toPandas().to_csv('diasLluvia.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('diasLluvia.csv')
+    blob.upload_from_filename('diasLluvia.csv')
 
     #PARA DERCARGA DE ARCHIVOS DEL BUCKET
     # source_blob_name= 'cards.csv'
