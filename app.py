@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, request, make_response
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
+from pyspark.sql.functions import regexp_replace
 from google.cloud import storage
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
@@ -52,8 +53,9 @@ if __name__ == '__main__':
         StructField('CP_COMERCIO', StringType(), False),
         StructField('SECTOR', StringType(), False),
         StructField('DIA', DateType(), False),
-        StructField('FRANJA_HORARIO', StringType(), False),
-        StructField('IMPORTE', FloatType(), False),
+        StructField('FRANJA_HORARIA', StringType(), False),
+        StructField('IMPORTE', DecimalType(10,2), False),
+        # StructField('IMPORTE', StringType(), False),
         StructField('NUM_OP', IntegerType(), False),
     ])
 
@@ -61,9 +63,9 @@ if __name__ == '__main__':
         StructField('FECHA', DateType(), False),
         StructField('DIA', IntegerType(), False),
         StructField('TMax', FloatType(), False),
-        StructField('HTMax', DateType(), False),
+        StructField('HTMax', StringType(), False),
         StructField('TMin', FloatType(), False),
-        StructField('HTMin', DateType(), False),
+        StructField('HTMin', StringType(), False),
         StructField('TMed', FloatType(), False),
         StructField('HumMax', FloatType(), False),
         StructField('HumMin', FloatType(), False),
@@ -75,13 +77,19 @@ if __name__ == '__main__':
         StructField('ETo', FloatType(), False),
     ])
 
-    datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
-    # datos_csv = spark.read.option("header", True).schema(SchemaCards).csv('datos/cards.csv', sep ="|")
-    datos_csv.show()
+    # datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
+    datos_csv = (spark.read.option("header", True).option("mode",'DROPMALFORMED').schema(SchemaCards).csv('datos/cards.csv', sep ="|"))
+    # datos_csv = (
+    #     datos_csv
+    #     .withColumn('IMPORTE', regexp_replace('IMPORTE', ',', '.'))
+    #     .withColumn('IMPORTE', datos_csv['IMPORTE'].cast("float"))
+    # )
     datos_csv.createOrReplaceTempView('tarjetas')
+    datos_csv.show()
     # datos_csv = (spark.read.csv('datos/weather.csv',header=True, inferSchema=True, sep =";"))
-    datos_csv = spark.read.option("header", True).schema(SchemaCards).csv('datos/weather.csv', sep =";")
+    datos_csv = (spark.read.option("header", True).option("mode",'DROPMALFORMED').schema(SchemaClima).csv('datos/weather.csv', sep =";"))
     datos_csv.createOrReplaceTempView('clima')
+    datos_csv.show()
 
 
     # Top Ingresos por Sector

@@ -32,3 +32,7 @@ Necesitas la herramienta pipreqs `pip install pipreqs`
 ## Run
 
 Ejecuta `python app.py`
+
+## Data
+
+En los datos no se puede usar commas (,) para numeros reales. Hay que usar puntos (.)
