@@ -37,11 +37,8 @@ if __name__ == '__main__':
     uploadToGoogle = False
     createCSV = False
 
-    # print('hola')
     # main()
-    # sc = SparkContext(master = local[*], app id = local-1636643309602)
-    # rdd = sc.textFile('README.md')
-    # rdd.count()
+    #hacemos lectura de CSVs
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
     datos_csv.createOrReplaceTempView('tarjetas')
     datos_csv = (spark.read.csv('datos/weather.csv',header=True, inferSchema=True, sep =";"))
@@ -122,26 +119,32 @@ if __name__ == '__main__':
     # Barrios con mayor gasto en salud
     result = spark.sql('''SELECT CP_CLIENTE, SUM(IMPORTE) as total FROM tarjetas WHERE SECTOR="SALUD" GROUP BY CP_CLIENTE ORDER BY total DESC''')
     result.show()
-    result.toPandas().to_csv('barriosMayorSalud.csv')
-    bucket = storage_client.get_bucket('datosbd')
-    blob = bucket.blob('barriosMayorSalud.csv')
-    blob.upload_from_filename('barriosMayorSalud.csv')
+    if createCSV: result.toPandas().to_csv('barriosMayorSalud.csv')
+    if uploadToGoogle:
+        result.toPandas().to_csv('barriosMayorSalud.csv')
+        bucket = storage_client.get_bucket('datosbd')
+        blob = bucket.blob('barriosMayorSalud.csv')
+        blob.upload_from_filename('barriosMayorSalud.csv')
 
     # Barrios que mas gastan en cada sector
     result = spark.sql('''SELECT SECTOR, CP_CLIENTE, SUM(IMPORTE) as total FROM tarjetas GROUP BY CP_CLIENTE, SECTOR ORDER BY SECTOR, total DESC''')
     result.show()
-    result.toPandas().to_csv('barriosMayorSector.csv')
-    bucket = storage_client.get_bucket('datosbd')
-    blob = bucket.blob('barriosMayorSector.csv')
-    blob.upload_from_filename('barriosMayorSector.csv')
+    if createCSV: result.toPandas().to_csv('barriosMayorSector.csv')
+    if uploadToGoogle:
+        result.toPandas().to_csv('barriosMayorSector.csv')
+        bucket = storage_client.get_bucket('datosbd')
+        blob = bucket.blob('barriosMayorSector.csv')
+        blob.upload_from_filename('barriosMayorSector.csv')
 
     # Volumen de compras por sector y barrio
     result = spark.sql('''SELECT SECTOR, CP_CLIENTE, COUNT(IMPORTE) as total FROM tarjetas GROUP BY CP_CLIENTE, SECTOR ORDER BY SECTOR, total DESC''')
     result.show()
-    result.toPandas().to_csv('volumenComprasSector.csv')
-    bucket = storage_client.get_bucket('datosbd')
-    blob = bucket.blob('volumenComprasSector.csv')
-    blob.upload_from_filename('volumenComprasSector.csv')
+    if createCSV: result.toPandas().to_csv('volumenComprasSector.csv')
+    if uploadToGoogle:
+        result.toPandas().to_csv('volumenComprasSector.csv')
+        bucket = storage_client.get_bucket('datosbd')
+        blob = bucket.blob('volumenComprasSector.csv')
+        blob.upload_from_filename('volumenComprasSector.csv')
 
     # Gasto medio compra
     # result = spark.sql('''SELECT ''')
