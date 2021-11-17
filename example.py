@@ -5,21 +5,18 @@ from google.cloud import storage
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 
+st.write("Top 5 negocios más rentables")
 data = pd.read_csv('gs://datosbd/barriosPorImporte.csv')
 data.drop(data.columns[[0]], axis=1, inplace=True)
 st.write(data)
 
-data = pd.read_csv('totalMovsDiaSemana.csv')
-st.bar_chart(data)
+st.write("En qué sector se gasta más los días lluviosos")
 
-data = pd.read_csv('topIngresosSector.csv')
-# st.(data)
+# data = pd.read_csv('topSectorLluvia.csv')
+# st.bar_chart(data)
 
-# data = pd.read_csv(DATA_URL, nrows=nrows)
-#     lowercase = lambda x: str(x).lower()
-#     data.rename(lowercase, axis='columns', inplace=True)
-#     data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-#     return data
+# data = pd.read_csv('topIngresosSector.csv')
+# st.write(data)
 
 df = pd.DataFrame({
   'first column': [10, 2, 3, 4],
