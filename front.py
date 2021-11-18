@@ -2,8 +2,10 @@ import numpy as np
 import streamlit as st
 import pandas as pd
 from google.cloud import storage
+import os
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
 
 st.write("Top 5 negocios más rentables")
 data = pd.read_csv('gs://datosbd/topIngresosSector.csv')
