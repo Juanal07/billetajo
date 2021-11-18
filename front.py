@@ -4,8 +4,10 @@ import pandas as pd
 from google.cloud import storage
 import datetime
 from enum import Enum
+import os
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
 
 st.set_page_config(
    page_title="Almería 2015",
