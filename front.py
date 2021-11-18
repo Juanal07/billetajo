@@ -5,6 +5,9 @@ from google.cloud import storage
 import datetime
 from enum import Enum
 import os
+import json
+from streamlit_folium import folium_static
+import folium
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
@@ -53,25 +56,44 @@ st.area_chart(df)
 st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
 st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
 
-df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
-df.drop(df.columns[[0]], axis=1, inplace=True)
-df
-df = pd.DataFrame(
-np.random.randn(1000, 2) / [50, 50] + [37.16, -2.33],
-columns=['lat', 'lon'])
-df
-st.map(df)
+# df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
+# df.drop(df.columns[[0]], axis=1, inplace=True)
+# df
+# df = pd.DataFrame(
+# np.random.randn(1000, 2) / [50, 50] + [37.16, -2.33],
+# columns=['lat', 'lon'])
+# df
+# st.map(df)
 
 
 
+# df = pd.read_csv('gs://datosbd/{}'.format(csv_names[4]))
+# df.drop(df.columns[[0]], axis=1, inplace=True)
+# df
 
 
+# with open("/home/juan/code/workspace/billetajo/almeria_20.json") as response:
+#     grid = json.load(response)
 
-# for csv in csv_names:
-#   st.write(csv)
-#   data = pd.read_csv('gs://datosbd/{}'.format(csv))
-#   data.drop(data.columns[0], axis=1, inplace=True)
-#   data
+
+# data_geo = json.load(open('almeria_20.json'))
+# data_geo
+# df.write(data_geo)
+
+
+with open('almeria_20.json') as f:
+  states_topo = json.load(f)
+# center on Liberty Bell
+m = folium.Map(location=[36.84, -2.467], zoom_start=9)
+
+# add marker for Liberty Bell
+tooltip = "Liberty Bell"
+# folium.Marker(
+#     [36.84, -2.467], popup="Liberty Bell", tooltip=tooltip
+# ).add_to(m)
+folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
+# call to render Folium map in Streamlit
+folium_static(m)
 
 
 
