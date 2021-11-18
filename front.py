@@ -49,8 +49,8 @@ tecnologia = df.loc[df['SECTOR']=='TECNOLOGIA','total'].values
 # Faltan auto, belleza, hogar
 d={'Alimentacion':alimentacion, 'Moda':moda, 'Ocio':ocio,'Otros':otros,'Restauracion':restauracion,'Salud':salud,'Tecnología':tecnologia}
 df = pd.DataFrame(data=d,index=franjas)
-st.area_chart(df)
-# st.bar_chart(df)
+# st.area_chart(df)
+st.bar_chart(df)
 
 
 st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
@@ -67,32 +67,33 @@ st.caption('En este mapa podrá visualizar los puntos donde puede ser más renta
 
 
 
-# df = pd.read_csv('gs://datosbd/{}'.format(csv_names[4]))
-# df.drop(df.columns[[0]], axis=1, inplace=True)
-# df
-
-
-# with open("/home/juan/code/workspace/billetajo/almeria_20.json") as response:
-#     grid = json.load(response)
-
-
-# data_geo = json.load(open('almeria_20.json'))
-# data_geo
-# df.write(data_geo)
-
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
+df
 
 with open('almeria_20.json') as f:
   states_topo = json.load(f)
-# center on Liberty Bell
-m = folium.Map(location=[36.84, -2.467], zoom_start=9)
 
-# add marker for Liberty Bell
-tooltip = "Liberty Bell"
-# folium.Marker(
-#     [36.84, -2.467], popup="Liberty Bell", tooltip=tooltip
-# ).add_to(m)
-folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
-# call to render Folium map in Streamlit
+st.write(states_topo['objects']['almeria_wm']['geometries'][0]['properties']['COD_POSTAL'])
+
+m = folium.Map(location=[37.16, -2.33], zoom_start=9)
+
+# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
+
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="Barrios con mas compras sin tienda de alimentacion",
+).add_to(m)
+
 folium_static(m)
 
 
