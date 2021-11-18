@@ -75,8 +75,6 @@ df
 with open('almeria_20.json') as f:
   states_topo = json.load(f)
 
-st.write(states_topo['objects']['almeria_wm']['geometries'][0]['properties']['COD_POSTAL'])
-
 m = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
 # folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
@@ -97,9 +95,51 @@ folium.Choropleth(
 folium_static(m)
 
 
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[2]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
+df
 
 
+m2 = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="otra",
+).add_to(m2)
+
+folium_static(m2)
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[3]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
+df
+
+
+m3 = folium.Map(location=[37.16, -2.33], zoom_start=9)
+
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="otra",
+).add_to(m3)
+
+folium_static(m3)
 
 # class Section(Enum):
 #     INTRO = "Introduction"
