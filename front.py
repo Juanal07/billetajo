@@ -18,12 +18,49 @@ st.set_page_config(
 
 st.title('Almeria 2015')
 
-csv_names=['totalMovsPorHorasSector.csv',
-'barriosAlimentacioSinTiendas.csv',
-'barriosMayorSalud.csv',
-'barriosMayorSector.csv',
-'volumenComprasSector.csv',
+csv_names=[
+   'totalMovsPorHorasSector.csv',
+   'barriosAlimentacioSinTiendas.csv',
+   'barriosMayorSalud.csv',
+   'barriosMayorSector.csv',
+   'volumenComprasSector.csv',
+   'totalMovsPorHoras.csv',
+   'totalMovsDiaSemana.csv',
+   'topSectorLluvia.csv',
 ]
+
+# -- 3. Total Movimientos por horas (totalMovsPorHoras.csv)
+
+st.write("3. Total Movimientos por horas")
+st.caption('En este grafica se ve el Movimiento por las horas')
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[5]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df.sort_values(by=['FRANJA_HORARIA'], inplace=True)
+df = pd.DataFrame(data={'Movimiento total':df['total'].values},index=df['FRANJA_HORARIA'])
+st.bar_chart(df)
+
+# -- 4. Total Movimientos por dia de semana (totalMovsDiaSemana.csv)
+
+st.write("3. Total Movimientos por dia de la semana")
+st.caption('En este grafica se ve el Movimiento por los dias de la semana')
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[6]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"]
+# df.replace({'dia': 0}, "Lunes", inplace=True)
+df = pd.DataFrame(data={'Movimiente total':df['total'].values}, index=dias)
+st.bar_chart(df)
+
+# -- 5. En qué sector se gasta más los días lluviosos
+
+st.write("5. En qué sector se gasta más los días lluviosos")
+st.caption('En este grafica se podria ver que la gente compra cuando lluvia')
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[7]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df = pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR'].values)
+# df = df.T
+st.bar_chart(df)
 
 
 st.write("7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores")
@@ -47,7 +84,7 @@ tecnologia = df.loc[df['SECTOR']=='TECNOLOGIA','total'].values
 d={'Alimentacion':alimentacion, 'Moda':moda, 'Ocio':ocio,'Otros':otros,'Restauracion':restauracion,'Salud':salud,'Tecnología':tecnologia}
 df = pd.DataFrame(data=d,index=franjas)
 st.area_chart(df)
-# st.bar_chart(df)
+st.bar_chart(df)
 
 
 st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
