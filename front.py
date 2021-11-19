@@ -72,7 +72,7 @@ df.drop(df.columns[[0]], axis=1, inplace=True)
 df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 df
 
-with open('almeria_20.json') as f:
+with open('datos/almeria_20.json') as f:
   states_topo = json.load(f)
 
 m = folium.Map(location=[37.16, -2.33], zoom_start=9)
