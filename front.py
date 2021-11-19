@@ -30,7 +30,29 @@ csv_names=[
    'totalMovsPorHoras.csv',
    'totalMovsDiaSemana.csv',
    'topSectorLluvia.csv',
+   'topIngresosSector.csv',
+   'topMovimientosSector.csv',
 ]
+
+# -- 1. Ránking de sectores más rentables (topIngresosSector.csv)
+
+st.write("1. Ránking de sectores más rentables")
+st.caption('En este grafica se ve los sectores mas rentables')
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[8]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+
+st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
+
+# -- 2. Top Movimientos por Sector (topMovimientosSector.csv)
+
+st.write("2. Top Movimientos por Sector")
+st.caption('En este grafica se ve el movimiento de los sectores')
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[9]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+
+st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
 
 # -- 3. Total Movimientos por horas (totalMovsPorHoras.csv)
 
@@ -45,7 +67,7 @@ st.bar_chart(df)
 
 # -- 4. Total Movimientos por dia de semana (totalMovsDiaSemana.csv)
 
-st.write("3. Total Movimientos por dia de la semana")
+st.write("4. Total Movimientos por dia de la semana")
 st.caption('En este grafica se ve el Movimiento por los dias de la semana')
 
 df = pd.read_csv('gs://datosbd/{}'.format(csv_names[6]))
