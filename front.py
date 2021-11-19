@@ -5,6 +5,9 @@ from google.cloud import storage
 import datetime
 from enum import Enum
 import os
+import json
+from streamlit_folium import folium_static
+import folium
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
@@ -65,7 +68,6 @@ st.bar_chart(df)
 
 st.write("7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores")
 st.caption('Aquí podrá visualizar el volumen de transaciones por sector y por franja horaria')
-
 df = pd.read_csv('gs://datosbd/{}'.format(csv_names[0]))
 sectores = df['SECTOR'].unique()
 franjas = df['FRANJA_HORARIA'].unique()
@@ -86,34 +88,97 @@ df = pd.DataFrame(data=d,index=franjas)
 st.area_chart(df)
 st.bar_chart(df)
 
+df.rename(columns = {'Unnamed: 0':'time'}, inplace = True)
+df = df.set_index('time')
+st.bar_chart(df)
 
 st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
 st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
 
+# df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
+# df.drop(df.columns[[0]], axis=1, inplace=True)
+# df
+# df = pd.DataFrame(
+# np.random.randn(1000, 2) / [50, 50] + [37.16, -2.33],
+# columns=['lat', 'lon'])
+# df
+# st.map(df)
+
+
+
 df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
 df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 df
-df = pd.DataFrame(
-np.random.randn(1000, 2) / [50, 50] + [37.16, -2.33],
-columns=['lat', 'lon'])
+
+with open('datos/almeria_20.json') as f:
+  states_topo = json.load(f)
+
+m = folium.Map(location=[37.16, -2.33], zoom_start=9)
+
+# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
+
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="Barrios con mas compras sin tienda de alimentacion",
+).add_to(m)
+
+folium_static(m)
+
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[2]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 df
-st.map(df)
 
 
+m2 = folium.Map(location=[37.16, -2.33], zoom_start=9)
+
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="otra",
+).add_to(m2)
+
+folium_static(m2)
+
+df = pd.read_csv('gs://datosbd/{}'.format(csv_names[3]))
+df.drop(df.columns[[0]], axis=1, inplace=True)
+df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
+df
 
 
+m3 = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
+folium.Choropleth(
+    geo_data=states_topo,
+    topojson='objects.almeria_wm',
+    name="choropleth",
+    data=df,
+    columns=["CP_CLIENTE", "total"],
+    key_on="feature.properties.COD_POSTAL",
+    fill_color="YlGn",
+    fill_opacity=0.7,
+    line_opacity=0.2,
+    legend_name="otra",
+).add_to(m3)
 
-# for csv in csv_names:
-#   st.write(csv)
-#   data = pd.read_csv('gs://datosbd/{}'.format(csv))
-#   data.drop(data.columns[0], axis=1, inplace=True)
-#   data
-
-
-
-
-
+folium_static(m3)
 
 # class Section(Enum):
 #     INTRO = "Introduction"
