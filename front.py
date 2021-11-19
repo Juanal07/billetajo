@@ -31,27 +31,10 @@ csv_names=['totalMovsPorHorasSector.csv',
 
 st.write("7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores")
 st.caption('Aquí podrá visualizar el volumen de transaciones por sector y por franja horaria')
-
 df = pd.read_csv('gs://datosbd/{}'.format(csv_names[0]))
-sectores = df['SECTOR'].unique()
-franjas = df['FRANJA_HORARIA'].unique()
-
-alimentacion = df.loc[df['SECTOR']=='ALIMENTACION','total'].values
-auto = df.loc[df['SECTOR']=='AUTO','total'].values
-belleza = df.loc[df['SECTOR']=='BELLEZA','total'].values
-hogar = df.loc[df['SECTOR']=='HOGAR','total'].values
-moda = df.loc[df['SECTOR']=='MODA Y COMPLEMENTOS','total'].values
-ocio = df.loc[df['SECTOR']=='OCIO Y TIEMPO LIBRE','total'].values
-otros = df.loc[df['SECTOR']=='OTROS','total'].values
-restauracion = df.loc[df['SECTOR']=='RESTAURACION','total'].values
-salud = df.loc[df['SECTOR']=='SALUD','total'].values
-tecnologia = df.loc[df['SECTOR']=='TECNOLOGIA','total'].values
-# Faltan auto, belleza, hogar
-d={'Alimentacion':alimentacion, 'Moda':moda, 'Ocio':ocio,'Otros':otros,'Restauracion':restauracion,'Salud':salud,'Tecnología':tecnologia}
-df = pd.DataFrame(data=d,index=franjas)
-# st.area_chart(df)
+df.rename(columns = {'Unnamed: 0':'time'}, inplace = True)
+df = df.set_index('time')
 st.bar_chart(df)
-
 
 st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
 st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')

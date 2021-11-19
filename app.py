@@ -86,7 +86,7 @@ if __name__ == '__main__':
     for i in sectores:
         for j in franjas:
             try:
-                df2.loc[j, i]=df.loc[(df['SECTOR']==i)&(df['FRANJA_HORARIA']==j),'total'].values[0]
+                df2.loc[j, i]=int(df.loc[(df['SECTOR']==i)&(df['FRANJA_HORARIA']==j),'total'].values[0])
             except:
                 df2.loc[j, i]=0
     
@@ -112,7 +112,6 @@ if __name__ == '__main__':
     result.show()
     if createCSV: result.toPandas().to_csv('output/barriosMayorSalud.csv')
     if uploadToGoogle:
-        result.toPandas().to_csv('barriosMayorSalud.csv')
         bucket = storage_client.get_bucket('datosbd')
         blob = bucket.blob('barriosMayorSalud.csv')
         blob.upload_from_filename('output/barriosMayorSalud.csv')
@@ -122,7 +121,6 @@ if __name__ == '__main__':
     result.show()
     if createCSV: result.toPandas().to_csv('output/barriosMayorSector.csv')
     if uploadToGoogle:
-        result.toPandas().to_csv('barriosMayorSector.csv')
         bucket = storage_client.get_bucket('datosbd')
         blob = bucket.blob('barriosMayorSector.csv')
         blob.upload_from_filename('output/barriosMayorSector.csv')
@@ -132,7 +130,6 @@ if __name__ == '__main__':
     result.show()
     if createCSV: result.toPandas().to_csv('output/volumenComprasSector.csv')
     if uploadToGoogle:
-        result.toPandas().to_csv('volumenComprasSector.csv')
         bucket = storage_client.get_bucket('datosbd')
         blob = bucket.blob('volumenComprasSector.csv')
         blob.upload_from_filename('output/volumenComprasSector.csv')

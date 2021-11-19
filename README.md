@@ -31,4 +31,6 @@ Necesitas la herramienta pipreqs `pip install pipreqs`
 
 ## Run
 
-Ejecuta `python app.py`
+Ejecuta spark `python app.py`
+
+Ejecuta front `streamlit run front.py`
