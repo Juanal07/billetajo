@@ -12,6 +12,8 @@ import folium
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
 
+os.system("spark-submit app.py")
+
 st.set_page_config(
    page_title="Almería 2015",
    page_icon="☀️",
