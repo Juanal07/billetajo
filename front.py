@@ -1,14 +1,11 @@
-import numpy as np
 import streamlit as st
 import pandas as pd
 from google.cloud import storage
-import datetime
 from enum import Enum
 import os
 import json
 from streamlit_folium import folium_static
 import folium
-import time
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
@@ -41,7 +38,8 @@ secciones = [
 	["7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores", "totalMovsPorHorasSector.csv"],
 	["8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación", "barriosAlimentacioSinTiendas.csv"],
 	["9.Localizar zona donde se gasta más en salud para futuras campañas de captación en seguros", "barriosMayorSalud.csv"],
-	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"]
+	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"],
+	["11.Volumen de compras de todo el año por sector", "volumenComprasSector.csv"],
 ]
 
 class Section(Enum):
@@ -56,6 +54,7 @@ class Section(Enum):
     OCTAVO 	= secciones[7][0]
     NOVENO 	= secciones[8][0]
     DECIMO 	= secciones[9][0]
+    UNDECIMO 	= secciones[10][0]
 
 sections = list(map(lambda d: d.value, Section))
 section_i = 0
@@ -70,7 +69,7 @@ section = st.sidebar.radio(
 )
 
 if section == Section.INTRO.value:
-    st.experimental_set_query_params(section=Section.INTRO.value)
+    # st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
 # Introducing [`streamlit-observable`](https://github.com/asg017/streamlit-observable)!
@@ -185,7 +184,6 @@ if section == Section.SEPTIMO.value:
     df.rename(columns = {'Unnamed: 0':'time'}, inplace = True)
     df = df.set_index('time')
     st.bar_chart(df)
-# st.area_chart(df)
 
 if section == Section.OCTAVO.value:
 
@@ -198,8 +196,6 @@ if section == Section.OCTAVO.value:
 
     m = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
-	# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
-
     folium.Choropleth(
         geo_data=states_topo,
         topojson='objects.almeria_wm',
@@ -207,7 +203,7 @@ if section == Section.OCTAVO.value:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="Reds",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="Barrios con mas compras sin tienda de alimentacion",
@@ -230,7 +226,7 @@ if section == Section.NOVENO.value:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="BuGn",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="otra",
@@ -252,7 +248,7 @@ if section == Section.DECIMO.value:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="RdYlGn_r",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="otra",
@@ -260,3 +256,14 @@ if section == Section.DECIMO.value:
 
     folium_static(m3)
 
+
+if section == Section.UNDECIMO.value:
+    # Mejora: poner el nombre del barrio junto con el cod postal
+    df = fetch_data(secciones[10][1])
+    cod_postales = df['CP_CLIENTE'].unique()
+    cod_postales.sort()
+    cod_selec = st.selectbox('Elige codigo postal', cod_postales,)
+    df = df.loc[ (df['CP_CLIENTE'] == int(cod_selec))]
+    # df
+    st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
+    
