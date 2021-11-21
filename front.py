@@ -27,49 +27,35 @@ st.set_page_config(
 
 st.title('Almeria 2015')
 
-# @st.cache(persist=True,allow_output_mutation=True)
-# def fetch_data(name):
-#     return pd.read_csv('gs://datosbd/{}'.format(name))
+# @st.cache()
+def fetch_data(name):
+    return pd.read_csv('gs://datosbd/{}'.format(name))
 
-csv_names=[
-   'totalMovsPorHorasSector.csv',
-   'barriosAlimentacioSinTiendas.csv',
-   'barriosMayorSalud.csv',
-   'barriosMayorSector.csv',
-   'volumenComprasSector.csv',
-   'totalMovsPorHoras.csv',
-   'totalMovsDiaSemana.csv',
-   'topSectorLluvia.csv',
-   'topIngresosSector.csv',
-   'topMovimientosSector.csv',
-]
-
-titles = [
-"Introducción",
-"1.Ránking de sectores más rentables",
-"2.Top Movimientos por Sector",
-"3.Total Movimientos por Horas",
-"4.Total Movimientos por día de la semana",
-"5.En qué sector se gasta más los días lluviosos",
-"6.Barrios (código postal) ordenados por importe total",
-"7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores",
-"8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación",
-"9.Localizar zona donde se gasta más en salud para futuras campañas de captación en seguros",
-"10.Ranking barrios que más gastan en cada sector",
+secciones = [
+	["1.Ránking de sectores más rentables", "topIngresosSector.csv"],
+	["2.Top Movimientos por Sector", "topMovimientosSector.csv"],
+	["3.Total Movimientos por Horas", "totalMovsPorHoras.csv"],
+	["4.Total Movimientos por día de la semana", "totalMovsDiaSemana.csv"],
+	["5.En qué sector se gasta más los días lluviosos", "topSectorLluvia.csv"],
+	["6.Barrios (código postal) ordenados por importe total", "barriosPorImporte.csv"],
+	["7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores", "totalMovsPorHorasSector.csv"],
+	["8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación", "barriosAlimentacioSinTiendas.csv"],
+	["9.Localizar zona donde se gasta más en salud para futuras campañas de captación en seguros", "barriosMayorSalud.csv"],
+	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"]
 ]
 
 class Section(Enum):
-    INTRO = titles[0]
-    PRIMERO = titles[1]
-    SEGUNDO =  titles[2]
-    TERCERO = titles[3]
-    CUARTO = titles[4]
-    QUINTO = titles[5]
-    SEXTO = titles[6]
-    SEPTIMO = titles[7]
-    OCTAVO = titles[8]
-    NOVENO =titles[9]
-    DECIMO =titles[10]
+    INTRO 	= "Introducción"
+    PRIMERO = secciones[0][0]
+    SEGUNDO = secciones[1][0]
+    TERCERO = secciones[2][0]
+    CUARTO 	= secciones[3][0]
+    QUINTO 	= secciones[4][0]
+    SEXTO 	= secciones[5][0]
+    SEPTIMO = secciones[6][0]
+    OCTAVO 	= secciones[7][0]
+    NOVENO 	= secciones[8][0]
+    DECIMO 	= secciones[9][0]
 
 sections = list(map(lambda d: d.value, Section))
 section_i = 0
@@ -105,23 +91,24 @@ if section == Section.PRIMERO.value:
     st.caption('En este grafica se ve los sectores mas rentables')
 
     with st.spinner('Cargando...'):
-        df = pd.read_csv('gs://datosbd/{}'.format(csv_names[8])) 
+        df = fetch_data(secciones[0][1])
         df = df.drop(df.columns[[0]], axis=1)
         st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
-    st.success('Terminado!')
 
 if section == Section.SEGUNDO.value:
-
 # -- 2. Top Movimientos por Sector (topMovimientosSector.csv)
 
     st.write("2. Top Movimientos por Sector")
     st.caption('En este grafica se ve el movimiento de los sectores')
 
-    my_bar = st.progress(0)
-    for percent_complete in range(100):
-        time.sleep(0.1)
-        my_bar.progress(percent_complete + 1)
-
+    #  my_bar = st.progress(0)
+    #  for percent_complete in range(20):
+    #      time.sleep(0.1)
+    #      my_bar.progress(percent_complete + 1)
+        
+    df2 = fetch_data(secciones[1][1])
+    df2.drop(df2.columns[[0]], axis=1, inplace=True)
+    st.bar_chart(pd.DataFrame(data={'Total':df2['total'].values},index=df2['SECTOR']))
 
 
 if section == Section.TERCERO.value:
@@ -130,7 +117,7 @@ if section == Section.TERCERO.value:
     st.write("3. Total Movimientos por horas")
     st.caption('En este grafica se ve el Movimiento por las horas')
 
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[5]))
+    df = fetch_data(secciones[2][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df.sort_values(by=['FRANJA_HORARIA'], inplace=True)
     df = pd.DataFrame(data={'Movimiento total':df['total'].values},index=df['FRANJA_HORARIA'])
@@ -143,10 +130,10 @@ if section == Section.CUARTO.value:
     st.write("4. Total Movimientos por dia de la semana")
     st.caption('En este grafica se ve el Movimiento por los dias de la semana')
 
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[6]))
+    df = fetch_data(secciones[3][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"]
-# df.replace({'dia': 0}, "Lunes", inplace=True)
+	# df.replace({'dia': 0}, "Lunes", inplace=True)
     df = pd.DataFrame(data={'Movimiente total':df['total'].values}, index=dias)
     st.bar_chart(df)
 
@@ -156,20 +143,45 @@ if section == Section.QUINTO.value:
 
     st.write("5. En qué sector se gasta más los días lluviosos")
     st.caption('En este grafica se podria ver que la gente compra cuando lluvia')
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[7]))
+    df = fetch_data(secciones[4][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df = pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR'].values)
 # df = df.T
     st.bar_chart(df)
 
-# if section == Section.SEXTO.value:
+if section == Section.SEXTO.value:
+
+	st.write(secciones[5][0])
+	st.caption('Aquí podrá ser interesante para conceder hipotecas')
+
+	df = fetch_data(secciones[5][1])
+	df.drop(df.columns[[0]], axis=1, inplace=True)
+	df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
+
+	m = folium.Map(location=[37.16, -2.33], zoom_start=9)
+
+	folium.Choropleth(
+        geo_data=states_topo,
+        topojson='objects.almeria_wm',
+        name="choropleth",
+        data=df,
+        columns=["CP_CLIENTE", "total"],
+        key_on="feature.properties.COD_POSTAL",
+        fill_color="YlGn",
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Barrios por importe total",
+    ).add_to(m)
+
+	folium_static(m)
+	st.write(df)
 
 if section == Section.SEPTIMO.value:
 
-    st.write(titles[7])
+    st.write(secciones[6][0])
     st.caption('Aquí podrá visualizar el volumen de transaciones por sector y por franja horaria')
 
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[0]))
+    df = fetch_data(secciones[6][1])
     df.rename(columns = {'Unnamed: 0':'time'}, inplace = True)
     df = df.set_index('time')
     st.bar_chart(df)
@@ -180,13 +192,13 @@ if section == Section.OCTAVO.value:
     st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
     st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
 
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[1]))
+    df = fetch_data(secciones[7][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
     m = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
-# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
+	# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
 
     folium.Choropleth(
         geo_data=states_topo,
@@ -205,7 +217,7 @@ if section == Section.OCTAVO.value:
 
 
 if section == Section.NOVENO.value:
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[2]))
+    df = fetch_data(secciones[8][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
@@ -226,8 +238,8 @@ if section == Section.NOVENO.value:
 
     folium_static(m2)
 
-if section == Section.NOVENO.value:
-    df = pd.read_csv('gs://datosbd/{}'.format(csv_names[3]))
+if section == Section.DECIMO.value:
+    df = fetch_data(secciones[9][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
