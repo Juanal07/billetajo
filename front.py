@@ -72,15 +72,15 @@ if section == Section.INTRO.value:
     # st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
-# Introducing [`streamlit-observable`](https://github.com/asg017/streamlit-observable)!
-👋🏼 Hello! This Streamlit app is an introduction to the [`streamlit-observable`](https://github.com/asg017/streamlit-observable) 
-library - a Streamlit custom component for embeding [Observable notebooks](https://observablehq.com)
-into Streamlit apps. You can render, re-use, and recycle any Observable notebook
-found on [observablehq.com](https://observablehq.com), 
-giving you access to hundreds of data visualizations,
-maps, charts, and animations that you can embed into any Streamlit app!
-👈🏼Check out the sidebar for a deep-dive into different ways you can use 
-`streamlit-observable` in your apps. Each example has a checkbox that looks like this:""")
+# Bienvenido a nuestro trabajo de big data!
+👋 En esta web encontrará información de utilidad para distintos futuros servicios que puede ofrecer un banco.
+
+🌅 Esta información esta basada en datos de movimientos bancarios y el tiempo atmosférico de la región de Almeria en el año 2015.
+
+👈 En la barra lateral podrá ir navegando por los distintos KPIs.
+
+🚀 Pulsando en el siguiente botón podrá actualizar las consultas Spark por si hay nuevos datos""")
+    st.button('Lanzar spark')
 
 if section == Section.PRIMERO.value:
 
