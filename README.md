@@ -29,6 +29,8 @@ Necesitas la herramienta pipreqs `pip install pipreqs`
 
 `pipreqs --force .`
 
+Además necesitarás la clave (json) para acceder al bucket, contáctanos.
+
 ## Run
 
 Ejecuta spark `python app.py`
