@@ -72,21 +72,21 @@ if section == Section.INTRO.value:
     # st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
-# Bienvenido a nuestro trabajo de big data!
-👋 En esta web encontrará información de utilidad para distintos futuros servicios que puede ofrecer un banco.
+    # Bienvenido a nuestro trabajo de big data!
+    👋 En esta web encontrará información de utilidad para distintos futuros servicios que puede ofrecer un banco.
 
-🌅 Esta información esta basada en datos de movimientos bancarios y el tiempo atmosférico de la región de Almeria en el año 2015.
+    🌅 Esta información esta basada en datos de movimientos bancarios y el tiempo atmosférico de la región de Almeria en el año 2015.
 
-👈 En la barra lateral podrá ir navegando por los distintos KPIs.
+    👈 En la barra lateral podrá ir navegando por los distintos KPIs.
 
-🚀 Pulsando en el siguiente botón podrá actualizar las consultas Spark por si hay nuevos datos""")
+    🚀 Pulsando en el siguiente botón podrá actualizar las consultas Spark por si hay nuevos datos""")
     st.button('Lanzar spark')
 
 if section == Section.PRIMERO.value:
 
     # -- 1. Ránking de sectores más rentables (topIngresosSector.csv)
 
-    st.write("1. Ránking de sectores más rentables")
+    st.write(secciones[0][0])
     st.caption('En este grafica se ve los sectores mas rentables')
 
     with st.spinner('Cargando...'):
@@ -97,7 +97,7 @@ if section == Section.PRIMERO.value:
 if section == Section.SEGUNDO.value:
 # -- 2. Top Movimientos por Sector (topMovimientosSector.csv)
 
-    st.write("2. Top Movimientos por Sector")
+    st.write(secciones[1][0])
     st.caption('En este grafica se ve el movimiento de los sectores')
 
     #  my_bar = st.progress(0)
@@ -113,7 +113,7 @@ if section == Section.SEGUNDO.value:
 if section == Section.TERCERO.value:
 # -- 3. Total Movimientos por horas (totalMovsPorHoras.csv)
 
-    st.write("3. Total Movimientos por horas")
+    st.write(secciones[2][0])
     st.caption('En este grafica se ve el Movimiento por las horas')
 
     df = fetch_data(secciones[2][1])
@@ -126,7 +126,7 @@ if section == Section.TERCERO.value:
 if section == Section.CUARTO.value:
 # -- 4. Total Movimientos por dia de semana (totalMovsDiaSemana.csv)
 
-    st.write("4. Total Movimientos por dia de la semana")
+    st.write(secciones[3][0])
     st.caption('En este grafica se ve el Movimiento por los dias de la semana')
 
     df = fetch_data(secciones[3][1])
@@ -140,7 +140,7 @@ if section == Section.CUARTO.value:
 if section == Section.QUINTO.value:
 # -- 5. En qué sector se gasta más los días lluviosos
 
-    st.write("5. En qué sector se gasta más los días lluviosos")
+    st.write(secciones[4][0])
     st.caption('En este grafica se podria ver que la gente compra cuando lluvia')
     df = fetch_data(secciones[4][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
@@ -187,7 +187,7 @@ if section == Section.SEPTIMO.value:
 
 if section == Section.OCTAVO.value:
 
-    st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
+    st.write(secciones[7][0])
     st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
 
     df = fetch_data(secciones[7][1])
@@ -213,6 +213,9 @@ if section == Section.OCTAVO.value:
 
 
 if section == Section.NOVENO.value:
+
+    st.write(secciones[8][0])
+    st.caption('AUN A DEFINIR')
     df = fetch_data(secciones[8][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
@@ -235,6 +238,10 @@ if section == Section.NOVENO.value:
     folium_static(m2)
 
 if section == Section.DECIMO.value:
+
+    st.write(secciones[9][0])
+    st.caption('AUN A DEFINIR')
+
     df = fetch_data(secciones[9][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
@@ -258,6 +265,10 @@ if section == Section.DECIMO.value:
 
 
 if section == Section.UNDECIMO.value:
+
+    st.write(secciones[10][0])
+    st.caption('AUN A DEFINIR')
+
     # Mejora: poner el nombre del barrio junto con el cod postal
     df = fetch_data(secciones[10][1])
     cod_postales = df['CP_CLIENTE'].unique()
