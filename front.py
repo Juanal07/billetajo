@@ -1,14 +1,11 @@
-import numpy as np
 import streamlit as st
 import pandas as pd
 from google.cloud import storage
-import datetime
 from enum import Enum
 import os
 import json
 from streamlit_folium import folium_static
 import folium
-import time
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
@@ -41,7 +38,8 @@ secciones = [
 	["7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores", "totalMovsPorHorasSector.csv"],
 	["8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación", "barriosAlimentacioSinTiendas.csv"],
 	["9.Localizar zona donde se gasta más en salud para futuras campañas de captación en seguros", "barriosMayorSalud.csv"],
-	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"]
+	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"],
+	["11.Volumen de compras de todo el año por sector", "volumenComprasSector.csv"],
 ]
 
 class Section(Enum):
@@ -56,6 +54,7 @@ class Section(Enum):
     OCTAVO 	= secciones[7][0]
     NOVENO 	= secciones[8][0]
     DECIMO 	= secciones[9][0]
+    UNDECIMO 	= secciones[10][0]
 
 sections = list(map(lambda d: d.value, Section))
 section_i = 0
@@ -80,20 +79,20 @@ if checkboxes[0]:
     st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
-# Introducing [`streamlit-observable`](https://github.com/asg017/streamlit-observable)!
-👋🏼 Hello! This Streamlit app is an introduction to the [`streamlit-observable`](https://github.com/asg017/streamlit-observable) 
-library - a Streamlit custom component for embeding [Observable notebooks](https://observablehq.com)
-into Streamlit apps. You can render, re-use, and recycle any Observable notebook
-found on [observablehq.com](https://observablehq.com), 
-giving you access to hundreds of data visualizations,
-maps, charts, and animations that you can embed into any Streamlit app!
-👈🏼Check out the sidebar for a deep-dive into different ways you can use 
-`streamlit-observable` in your apps. Each example has a checkbox that looks like this:""")
+    # Bienvenido a nuestro trabajo de big data!
+    👋 En esta web encontrará información de utilidad para distintos futuros servicios que puede ofrecer un banco.
+
+    🌅 Esta información esta basada en datos de movimientos bancarios y el tiempo atmosférico de la región de Almeria en el año 2015.
+
+    👈 En la barra lateral podrá ir navegando por los distintos KPIs.
+
+    🚀 Pulsando en el siguiente botón podrá actualizar las consultas Spark por si hay nuevos datos""")
+    st.button('Lanzar spark')
 
 if checkboxes[1]:
     # -- 1. Ránking de sectores más rentables (topIngresosSector.csv)
 
-    st.write("1. Ránking de sectores más rentables")
+    st.write(secciones[0][0])
     st.caption('En este grafica se ve los sectores mas rentables')
 
     with st.spinner('Cargando...'):
@@ -104,7 +103,7 @@ if checkboxes[1]:
 if checkboxes[2]:
 # -- 2. Top Movimientos por Sector (topMovimientosSector.csv)
 
-    st.write("2. Top Movimientos por Sector")
+    st.write(secciones[1][0])
     st.caption('En este grafica se ve el movimiento de los sectores')
 
     #  my_bar = st.progress(0)
@@ -120,7 +119,7 @@ if checkboxes[2]:
 if checkboxes[3]:
 # -- 3. Total Movimientos por horas (totalMovsPorHoras.csv)
 
-    st.write("3. Total Movimientos por horas")
+    st.write(secciones[2][0])
     st.caption('En este grafica se ve el Movimiento por las horas')
 
     df = fetch_data(secciones[2][1])
@@ -133,7 +132,7 @@ if checkboxes[3]:
 if checkboxes[4]:
 # -- 4. Total Movimientos por dia de semana (totalMovsDiaSemana.csv)
 
-    st.write("4. Total Movimientos por dia de la semana")
+    st.write(secciones[3][0])
     st.caption('En este grafica se ve el Movimiento por los dias de la semana')
 
     df = fetch_data(secciones[3][1])
@@ -147,7 +146,7 @@ if checkboxes[4]:
 if checkboxes[5]:
 # -- 5. En qué sector se gasta más los días lluviosos
 
-    st.write("5. En qué sector se gasta más los días lluviosos")
+    st.write(secciones[4][0])
     st.caption('En este grafica se podria ver que la gente compra cuando lluvia')
     df = fetch_data(secciones[4][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
@@ -191,11 +190,10 @@ if checkboxes[7]:
     df.rename(columns = {'Unnamed: 0':'time'}, inplace = True)
     df = df.set_index('time')
     st.bar_chart(df)
-# st.area_chart(df)
 
 if checkboxes[8]:
 
-    st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
+    st.write(secciones[7][0])
     st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
 
     df = fetch_data(secciones[7][1])
@@ -204,8 +202,6 @@ if checkboxes[8]:
 
     m = folium.Map(location=[37.16, -2.33], zoom_start=9)
 
-	# folium.TopoJson(states_topo,'objects.almeria_wm').add_to(m)
-
     folium.Choropleth(
         geo_data=states_topo,
         topojson='objects.almeria_wm',
@@ -213,7 +209,7 @@ if checkboxes[8]:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="Reds",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="Barrios con mas compras sin tienda de alimentacion",
@@ -223,6 +219,8 @@ if checkboxes[8]:
 
 
 if checkboxes[9]:
+    st.write(secciones[8][0])
+    st.caption('AUN A DEFINIR')
     df = fetch_data(secciones[8][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
@@ -236,7 +234,7 @@ if checkboxes[9]:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="BuGn",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="otra",
@@ -245,6 +243,8 @@ if checkboxes[9]:
     folium_static(m2)
 
 if checkboxes[10]:
+    st.write(secciones[9][0])
+    st.caption('AUN A DEFINIR')
     df = fetch_data(secciones[9][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
@@ -258,7 +258,7 @@ if checkboxes[10]:
         data=df,
         columns=["CP_CLIENTE", "total"],
         key_on="feature.properties.COD_POSTAL",
-        fill_color="YlGn",
+        fill_color="RdYlGn_r",
         fill_opacity=0.7,
         line_opacity=0.2,
         legend_name="otra",
@@ -266,3 +266,18 @@ if checkboxes[10]:
 
     folium_static(m3)
 
+
+if section == Section.UNDECIMO.value:
+
+    st.write(secciones[10][0])
+    st.caption('AUN A DEFINIR')
+
+    # Mejora: poner el nombre del barrio junto con el cod postal
+    df = fetch_data(secciones[10][1])
+    cod_postales = df['CP_CLIENTE'].unique()
+    cod_postales.sort()
+    cod_selec = st.selectbox('Elige codigo postal', cod_postales,)
+    df = df.loc[ (df['CP_CLIENTE'] == int(cod_selec))]
+    # df
+    st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
+    
