@@ -63,13 +63,20 @@ section_param = st.experimental_get_query_params().get("section")
 if section_param and section_param[0] in sections:
     section_i = sections.index(section_param[0])
 
-section = st.sidebar.radio(
-    "Section",
-    sections,
-    index=section_i
-)
+# section = st.sidebar.radio(
+#     "Section",
+#     sections,
+#     index=section_i
+# )
 
-if section == Section.INTRO.value:
+checkboxes = []
+
+checkboxes.append(st.sidebar.checkbox("Introducción", True))
+
+for section in secciones:
+    checkboxes.append(st.sidebar.checkbox(section[0]))
+
+if checkboxes[0]:
     st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
@@ -83,8 +90,7 @@ maps, charts, and animations that you can embed into any Streamlit app!
 👈🏼Check out the sidebar for a deep-dive into different ways you can use 
 `streamlit-observable` in your apps. Each example has a checkbox that looks like this:""")
 
-if section == Section.PRIMERO.value:
-
+if checkboxes[1]:
     # -- 1. Ránking de sectores más rentables (topIngresosSector.csv)
 
     st.write("1. Ránking de sectores más rentables")
@@ -95,7 +101,7 @@ if section == Section.PRIMERO.value:
         df = df.drop(df.columns[[0]], axis=1)
         st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
 
-if section == Section.SEGUNDO.value:
+if checkboxes[2]:
 # -- 2. Top Movimientos por Sector (topMovimientosSector.csv)
 
     st.write("2. Top Movimientos por Sector")
@@ -111,7 +117,7 @@ if section == Section.SEGUNDO.value:
     st.bar_chart(pd.DataFrame(data={'Total':df2['total'].values},index=df2['SECTOR']))
 
 
-if section == Section.TERCERO.value:
+if checkboxes[3]:
 # -- 3. Total Movimientos por horas (totalMovsPorHoras.csv)
 
     st.write("3. Total Movimientos por horas")
@@ -124,7 +130,7 @@ if section == Section.TERCERO.value:
     st.bar_chart(df)
 
 
-if section == Section.CUARTO.value:
+if checkboxes[4]:
 # -- 4. Total Movimientos por dia de semana (totalMovsDiaSemana.csv)
 
     st.write("4. Total Movimientos por dia de la semana")
@@ -138,7 +144,7 @@ if section == Section.CUARTO.value:
     st.bar_chart(df)
 
 
-if section == Section.QUINTO.value:
+if checkboxes[5]:
 # -- 5. En qué sector se gasta más los días lluviosos
 
     st.write("5. En qué sector se gasta más los días lluviosos")
@@ -149,7 +155,7 @@ if section == Section.QUINTO.value:
 # df = df.T
     st.bar_chart(df)
 
-if section == Section.SEXTO.value:
+if checkboxes[6]:
 
 	st.write(secciones[5][0])
 	st.caption('Aquí podrá ser interesante para conceder hipotecas')
@@ -176,7 +182,7 @@ if section == Section.SEXTO.value:
 	folium_static(m)
 	st.write(df)
 
-if section == Section.SEPTIMO.value:
+if checkboxes[7]:
 
     st.write(secciones[6][0])
     st.caption('Aquí podrá visualizar el volumen de transaciones por sector y por franja horaria')
@@ -187,7 +193,7 @@ if section == Section.SEPTIMO.value:
     st.bar_chart(df)
 # st.area_chart(df)
 
-if section == Section.OCTAVO.value:
+if checkboxes[8]:
 
     st.write("8.Barrios donde se compre muchos alimentos pero no hay comercio de alimentación")
     st.caption('En este mapa podrá visualizar los puntos donde puede ser más rentable abrir un supermercado')
@@ -216,7 +222,7 @@ if section == Section.OCTAVO.value:
     folium_static(m)
 
 
-if section == Section.NOVENO.value:
+if checkboxes[9]:
     df = fetch_data(secciones[8][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
@@ -238,7 +244,7 @@ if section == Section.NOVENO.value:
 
     folium_static(m2)
 
-if section == Section.DECIMO.value:
+if checkboxes[10]:
     df = fetch_data(secciones[9][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
