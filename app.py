@@ -92,4 +92,9 @@ if __name__ == '__main__':
     # result.show()
     uploadBucket('volumenComprasSector.csv')
 
+    # Media de importes por sector pudiendo elegir el clima
+    result = spark.sql('''SELECT SECTOR, FECHA, AVG(IMPORTE) as media, first(Rad) as Rad, first(Precip) as Precip FROM tarjetas, clima WHERE tarjetas.DIA=clima.FECHA GROUP BY FECHA, SECTOR ORDER BY FECHA ASC, SECTOR DESC''')
+    # result.show()
+    uploadBucket('mediaImportesClima.csv')
+
     print("Todos los kpi se han realizado")
