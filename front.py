@@ -1,13 +1,13 @@
 import streamlit as st
 import pandas as pd
-# from google.cloud import storage
+from google.cloud import storage
 import os
 import json
 from streamlit_folium import folium_static
 import folium
 
-# storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
+storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
 
 def launchSpark():
     os.system("spark-submit app.py")
