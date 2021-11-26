@@ -23,7 +23,10 @@ st.set_page_config(
 st.title('Almeria 2015')
 
 def fetch_data(name):
-    return pd.read_csv('gs://datosbd/{}'.format(name))
+    try:
+      return pd.read_csv('gs://datosbd/{}'.format(name))
+    except:
+      return pd.read_csv('output/{}'.format(name)) 
 
 secciones = [
     ["1.Volumen total agrupado por sector", "topIngresosSector.csv", "En este punto visualizamos los sectores que más euros brutos manejan. Destaca el sector de la salud debido a que las operaciones y el material sanitario tiene un elevado coste. Sorprendentemente el sector de la moda maneja un elevado volumen, con razón Amancio Ortega es el más rico de España."],
