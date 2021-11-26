@@ -1,23 +1,19 @@
-from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from google.cloud import storage
 import pandas as pd
 
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
-
 spark = SparkSession.builder.master("local[*]").getOrCreate()
 
+#funcion de guardado y subida al bucket de csv
 def uploadBucket(name):
-    if createCSV: result.toPandas().to_csv('output/'+name)
-    if uploadToGoogle:
-        bucket = storage_client.get_bucket('datosbd')
-        blob = bucket.blob(name)
-        blob.upload_from_filename('output/'+name)
+
+    result.toPandas().to_csv('output/'+name)
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob(name)
+    blob.upload_from_filename('output/'+name)
 
 if __name__ == '__main__':
-
-    uploadToGoogle = True
-    createCSV = True
 
     #hacemos lectura de CSVs
     datos_csv = (spark.read.csv('datos/cards.csv',header=True, inferSchema=True, sep ="|"))
