@@ -66,11 +66,10 @@ if __name__ == '__main__':
                 df2.loc[j, i]=0
 
     # En este caso no se llama a la función al ser de diferente casuistica
-    if createCSV: df2.to_csv('output/totalMovsPorHorasSector.csv')
-    if uploadToGoogle:
-        bucket = storage_client.get_bucket('datosbd')
-        blob = bucket.blob('totalMovsPorHorasSector.csv')
-        blob.upload_from_filename('output/totalMovsPorHorasSector.csv')
+    df2.to_csv('output/totalMovsPorHorasSector.csv')
+    bucket = storage_client.get_bucket('datosbd')
+    blob = bucket.blob('totalMovsPorHorasSector.csv')
+    blob.upload_from_filename('output/totalMovsPorHorasSector.csv')
 
     # Barrios donde se compre muchos alimentos pero no hay comercio de alimentación
     result = spark.sql('''SELECT CP_CLIENTE, count(IMPORTE) as total FROM tarjetas WHERE CP_CLIENTE!=CP_COMERCIO AND SECTOR="ALIMENTACION" GROUP BY CP_CLIENTE ORDER BY total DESC''')
