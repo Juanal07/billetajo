@@ -10,7 +10,8 @@ import folium
 storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
 
-# os.system("spark-submit app.py")
+def launchSpark():
+    os.system("spark-submit app.py")
 
 with open('datos/almeria_20.json') as f:
     states_topo = json.load(f)
@@ -18,13 +19,10 @@ with open('datos/almeria_20.json') as f:
 st.set_page_config(
    page_title="Almería 2015",
    page_icon="☀️",
-   # layout="wide",
-   # initial_sidebar_state="expanded",
 )
 
 st.title('Almeria 2015')
 
-# @st.cache()
 def fetch_data(name):
     return pd.read_csv('gs://datosbd/{}'.format(name))
 
@@ -40,33 +38,8 @@ secciones = [
 	["9.Localizar zona donde se gasta más en salud para futuras campañas de captación en seguros", "barriosMayorSalud.csv"],
 	["10.Ranking barrios que más gastan en cada sector", "barriosMayorSector.csv"],
 	["11.Volumen de compras de todo el año por sector", "volumenComprasSector.csv"],
+    ["12.Media de importes por sector pudiendo elegir el clima", "mediaImportesClima.csv"]
 ]
-
-class Section(Enum):
-    INTRO 	= "Introducción"
-    PRIMERO = secciones[0][0]
-    SEGUNDO = secciones[1][0]
-    TERCERO = secciones[2][0]
-    CUARTO 	= secciones[3][0]
-    QUINTO 	= secciones[4][0]
-    SEXTO 	= secciones[5][0]
-    SEPTIMO = secciones[6][0]
-    OCTAVO 	= secciones[7][0]
-    NOVENO 	= secciones[8][0]
-    DECIMO 	= secciones[9][0]
-    UNDECIMO 	= secciones[10][0]
-
-sections = list(map(lambda d: d.value, Section))
-section_i = 0
-section_param = st.experimental_get_query_params().get("section")
-if section_param and section_param[0] in sections:
-    section_i = sections.index(section_param[0])
-
-# section = st.sidebar.radio(
-#     "Section",
-#     sections,
-#     index=section_i
-# )
 
 checkboxes = []
 
@@ -76,10 +49,9 @@ for section in secciones:
     checkboxes.append(st.sidebar.checkbox(section[0]))
 
 if checkboxes[0]:
-    st.experimental_set_query_params(section=Section.INTRO.value)
 
     st.write("""
-    # Bienvenido a nuestro trabajo de big data!
+    # Bienvenido a nuestro trabajo de Big Data!
     👋 En esta web encontrará información de utilidad para distintos futuros servicios que puede ofrecer un banco.
 
     🌅 Esta información esta basada en datos de movimientos bancarios y el tiempo atmosférico de la región de Almeria en el año 2015.
@@ -87,7 +59,9 @@ if checkboxes[0]:
     👈 En la barra lateral podrá ir navegando por los distintos KPIs.
 
     🚀 Pulsando en el siguiente botón podrá actualizar las consultas Spark por si hay nuevos datos""")
-    st.button('Lanzar spark')
+    # Boton para relanzar la ejecución de Spark
+    if st.button('Lanzar spark'):
+        launchSpark()
 
 if checkboxes[1]:
     # -- 1. Ránking de sectores más rentables (topIngresosSector.csv)
@@ -105,11 +79,6 @@ if checkboxes[2]:
 
     st.write(secciones[1][0])
     st.caption('En este grafica se ve el movimiento de los sectores')
-
-    #  my_bar = st.progress(0)
-    #  for percent_complete in range(20):
-    #      time.sleep(0.1)
-    #      my_bar.progress(percent_complete + 1)
         
     df2 = fetch_data(secciones[1][1])
     df2.drop(df2.columns[[0]], axis=1, inplace=True)
@@ -138,7 +107,6 @@ if checkboxes[4]:
     df = fetch_data(secciones[3][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"]
-	# df.replace({'dia': 0}, "Lunes", inplace=True)
     df = pd.DataFrame(data={'Movimiente total':df['total'].values}, index=dias)
     st.bar_chart(df)
 
@@ -151,7 +119,6 @@ if checkboxes[5]:
     df = fetch_data(secciones[4][1])
     df.drop(df.columns[[0]], axis=1, inplace=True)
     df = pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR'].values)
-# df = df.T
     st.bar_chart(df)
 
 if checkboxes[6]:
@@ -267,9 +234,9 @@ if checkboxes[10]:
     folium_static(m3)
 
 
-if section == Section.UNDECIMO.value:
+if checkboxes[11]:
 
-    st.write(secciones[10][0])
+    st.write(secciones[11][0])
     st.caption('AUN A DEFINIR')
 
     # Mejora: poner el nombre del barrio junto con el cod postal
@@ -280,4 +247,24 @@ if section == Section.UNDECIMO.value:
     df = df.loc[ (df['CP_CLIENTE'] == int(cod_selec))]
     # df
     st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
-    
+
+if checkboxes[12]:
+
+    st.write(secciones[11][0])
+    st.caption('AUN A DEFINIR')
+
+    df = fetch_data(secciones[11][1])
+    cod_selec = st.selectbox('Elige el tiempo', ["Soleado", "Lluvioso", "Nublado"],)
+    if cod_selec=="Soleado":
+        df = df.loc[ (df['Rad'] > 15.0) & (df['Precip'] == 0.0)]
+    elif cod_selec=="Lluvioso":
+        df = df.loc[ (df['Precip'] >= 2.0)]
+    else:
+        df = df.loc[ (df['Rad'] < 15.0) & (df['Precip'] <= 2.0)]
+    df.drop(df.columns[[0]], axis=1, inplace=True)
+    df
+
+    data = []
+    for sec in df['SECTOR'].unique():
+        data.append(df['media'].loc[ (df['SECTOR'] == sec) ].mean())
+    st.bar_chart(pd.DataFrame(data,index=df['SECTOR'].unique()))    
