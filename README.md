@@ -36,3 +36,5 @@ Además necesitarás la clave (json) para acceder al bucket, contáctanos.
 Ejecuta spark `python app.py`
 
 Ejecuta front `streamlit run front.py`
+
+Si desea probar la aplicación, está desplegada en este enlace https://bit.ly/bigdata-uem, tiene desabilitado el botón de lanzar spark por limitaciones del servidor.
