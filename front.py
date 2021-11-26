@@ -6,8 +6,8 @@ import json
 from streamlit_folium import folium_static
 import folium
 
-storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-74151e35e325.json"
+storage_client = storage.Client.from_service_account_json('big-data-328215-a186e9e50239.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "big-data-328215-a186e9e50239.json"
 
 def launchSpark():
     os.system("spark-submit app.py")
@@ -35,7 +35,7 @@ secciones = [
 	  ["4.Movimientos totales agrupados por día de la semana", "totalMovsDiaSemana.csv", "Aquí podemos ver que días de la semana tienen más movimientos, no es de extrañar que el domingo tenga un volumen muy inferior debido a que es el día típico de descanso. También puede ser útil para saber en qué franja temporal realizar las labores de mantenimiento."],
     ["5.Volumen total en días lluviosos agrupado por sector", "topSectorLluvia.csv", "Este KPI es el mismo que el punto 1 pero teniendo en cuenta solo los días lluviosos, es muy útil compararlo con el KPI 1 para poder sacar algunas conclusiones. La principal diferencia es que baja el volumen en Ocio y tiempo libre y sube en Otros."],
 	  ["6.Barrios (código postal) ordenados por importe total", "barriosPorImporte.csv", "Mediante este mapa tendrá la capacidad de hacer zoom y con un esquema de colores visualizar los barrios con mayor volumen en euros."],
-	  ["7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores", "totalMovsPorHorasSector.csv", "Este KPI es muy útil compararlo con el 3 ya que se trata de la misma información pero segmentada por sectores. Destaca por ejemplo que casi todas las transacciones que se hacen en domingo son en restauración."],
+	  ["7.Gráfica con las transacciones de media en cada franja horaria de los 10 sectores", "totalMovsPorHorasSector.csv", "Este KPI es muy útil compararlo con el 3 ya que se trata de la misma información pero segmentada por sectores. Destaca por ejemplo que casi todas las transacciones que se hacen de 22 a 24 son en restauración."],
     ["8.Barrios donde se compran muchos alimentos pero no hay comercio de alimentación", "barriosAlimentacioSinTiendas.csv", "Este KPI está pensado para encontrar barrios donde la gente decide hacer la compra en un barrio diferente al suyo, de ese modo es una información útil para invertir en un nuevo supermercado en la zona."],
     ["9.Barrios donde más se gasta en salud", "barriosMayorSalud.csv", "Este punto es útil para localizar la zona donde se gasta más en salud para futuras campañas de captación en seguros."],
 	  ["10.Ranking barrios que más gastan", "barriosMayorSector.csv", "Teniendo en cuenta todos los sectores, visualizamos los barrios que más gastan."],
@@ -113,6 +113,7 @@ if checkboxes[5]:
     st.bar_chart(df)
 
 if checkboxes[6]:
+# -- 6. Barrios (código postal) ordenados por importe total
     st.write(secciones[5][0])
     st.caption(secciones[5][2])
     df = fetch_data(secciones[5][1])
@@ -135,6 +136,7 @@ if checkboxes[6]:
     st.write(df)
 
 if checkboxes[7]:
+# -- 7. Gráfica con las transacciones de media en cada franja horaria de los 10 sectores
     st.write(secciones[6][0])
     st.caption(secciones[6][2])
     df = fetch_data(secciones[6][1])
@@ -143,6 +145,7 @@ if checkboxes[7]:
     st.bar_chart(df)
 
 if checkboxes[8]:
+# -- 8. Barrios donde se compran muchos alimentos pero no hay comercio de alimentación
     st.write(secciones[7][0])
     st.caption(secciones[7][2])
     df = fetch_data(secciones[7][1])
@@ -165,6 +168,7 @@ if checkboxes[8]:
     df
 
 if checkboxes[9]:
+# -- 9. Barrios donde más se gasta en salud
     st.write(secciones[8][0])
     st.caption(secciones[8][2])
     df = fetch_data(secciones[8][1])
@@ -187,6 +191,7 @@ if checkboxes[9]:
     df
 
 if checkboxes[10]:
+# -- 10. Ranking barrios que más gastan
     st.write(secciones[9][0])
     st.caption(secciones[9][2])
     df = fetch_data(secciones[9][1])
@@ -209,6 +214,7 @@ if checkboxes[10]:
     df
 
 if checkboxes[11]:
+# -- 11. Por cada sector ver el volumen de compras durante el año, se puede filtrar por código postal.
     st.write(secciones[10][0])
     st.caption(secciones[10][2])
     # TODO: poner el nombre del barrio junto con el cod postal
@@ -220,6 +226,7 @@ if checkboxes[11]:
     st.bar_chart(pd.DataFrame(data={'Total':df['total'].values},index=df['SECTOR']))
 
 if checkboxes[12]:
+# -- 12. Media de importes por sector pudiendo elegir el clima
     st.write(secciones[11][0])
     st.caption(secciones[11][2])
     df = fetch_data(secciones[11][1])

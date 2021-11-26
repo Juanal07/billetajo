@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from google.cloud import storage
 import pandas as pd
 
-storage_client = storage.Client.from_service_account_json('big-data-328215-74151e35e325.json')
+storage_client = storage.Client.from_service_account_json('big-data-328215-a186e9e50239.json')
 spark = SparkSession.builder.master("local[*]").getOrCreate()
 
 #funcion de guardado y subida al bucket de csv
