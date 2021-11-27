@@ -4,7 +4,7 @@ set base=%CD%
 set venv=%base%\venv
 set scripts=%venv%\Scripts
 
-python -m pip install virtualenv==20.10.0
+python -m pip install virtualenv
 
 rmdir /s /q "%venv%"
 python -m venv --upgrade-deps --clear "%venv%"
